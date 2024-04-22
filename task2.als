@@ -45,7 +45,7 @@ pred Send [from , to : Principal , seqnum : Int , d : Data ] {
 	State.send_counter' = State . send_counter ++ ( from -> to -> (add[seqnum ,1]))
 	State.recv_counter' = State . recv_counter
 	State.channel_state' = State . channel_state
-	State.debug_last_action ’ = SendAction
+	State.debug_last_action' = SendAction
 }
 
 //Task 1.1 Recv predicate
@@ -85,10 +85,10 @@ pred Attacker_Action {
 	(one State.network and no State.network')
 	or
 	(no State.network and one State.network' and State.channel_state = Insecure)
-	State . send_counter ’ = State . send_counter
-	State . recv_counter ’ = State . recv_counter
-	State . channel_state ’ = State . channel_state
-	State . debug_last_action ’ = AttackerAction
+	State . send_counter' = State . send_counter
+	State . recv_counter' = State . recv_counter
+	State . channel_state' = State . channel_state
+	State . debug_last_action' = AttackerAction
 }
 
 // the initial state
@@ -107,7 +107,6 @@ pred State_Transition {
 	Go_Secure
 	or
 	Do_Nothing
-	//注释掉下面两行来运行in_sync
 	or
 	Attacker_Action
 }
@@ -171,4 +170,15 @@ assert security_goal {
 		=> Once_Recv[p,q,seqnum1,d]
 }
 
-check security_goal for 2 but 5..15 steps
+check security_goal for 2 but 4..14 steps
+
+// 任务2.2
+// 我们的安全目标检查有两个要素：bound和steps。
+// bound 为 2 就足够了，因为只需要 `P -> Q` 和 `Q -> P` 这两条消息就能检测到漏洞。
+// 多个 Principal 互相收发，和 2 个 Principal 互相收发，本质一样。
+// 所以 bound 为 2 够用了。 
+
+// steps 数目越多，越可能检测到漏洞。但鉴于运行时间比较长，选择了 4..14 steps 。
+// 在未修改 Go_Secure 之前，4..14 steps 检测到了漏洞。
+// 修改 Go_Secure 之后，4..14 steps 检测不到漏洞了。
+// 我们相信，这个步骤数量应该足够检测到可能的漏洞了。即使对于更大的步骤，应该也检测不到漏洞了。

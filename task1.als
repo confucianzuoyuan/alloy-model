@@ -45,7 +45,7 @@ pred Send [from , to : Principal , seqnum : Int , d : Data ] {
 	State.send_counter' = State . send_counter ++ ( from -> to -> (add[seqnum ,1]))
 	State.recv_counter' = State . recv_counter
 	State.channel_state' = State . channel_state
-	State.debug_last_action ’ = SendAction
+	State.debug_last_action' = SendAction
 }
 
 //Task 1.1 Recv predicate
@@ -85,10 +85,10 @@ pred Attacker_Action {
 	(one State.network and no State.network')
 	or
 	(no State.network and one State.network' and State.channel_state = Insecure)
-	State . send_counter ’ = State . send_counter
-	State . recv_counter ’ = State . recv_counter
-	State . channel_state ’ = State . channel_state
-	State . debug_last_action ’ = AttackerAction
+	State.send_counter' = State.send_counter
+	State.recv_counter' = State.recv_counter
+	State.channel_state' = State.channel_state
+	State.debug_last_action' = AttackerAction
 }
 
 // the initial state
@@ -107,7 +107,6 @@ pred State_Transition {
 	Go_Secure
 	or
 	Do_Nothing
-	//注释掉下面两行来运行in_sync
 	or
 	Attacker_Action
 }
@@ -171,4 +170,4 @@ assert security_goal {
 		=> Once_Recv[p,q,seqnum1,d]
 }
 
-check security_goal for 2 but 5..15 steps
+check security_goal for 2 but 4..14 steps
